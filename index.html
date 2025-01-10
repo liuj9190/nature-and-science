@@ -1,0 +1,299 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>一天一則，發現366個自然和科學有趣知識</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    #game-container, #result-container {
+      display: none;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 20px;
+      width: 80%;
+      max-width: 550px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      box-sizing: border-box;
+      z-index: 10;  /* 保证不会被其他元素遮挡 */
+      position: relative; /* 使其可以在屏幕上正确显示 */
+    }
+    #game-container.active, #result-container.active {
+      display: block;
+    }
+   
+    #question {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+    .option {
+      display: block;
+      width: 80%;
+      margin: 10px auto;
+      background: #007BFF; /* 用於選項按鈕的背景，代表藍色 */
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      text-align: left;
+    }
+    .option:hover {
+      background: #0056b3;  /* 用於選項按鈕的懸停狀態，代表更深的藍色 */
+    }
+    #result-text {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+    #correct-answer {
+      margin-bottom: 20px;
+      font-size: 1em;
+      color: #555555;  /* 用於正確答案解釋文字，代表深灰色 */
+    }
+ 
+    #book-title1 {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color:  #FF4D40;  /* 用於書名 1 和結果文字正確狀態，代表藍色 */
+    }
+    #book-title2 {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #333e;  
+    }
+    #book-cover {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+    #next {
+      padding: 10px 20px;
+      background: #28a745;  /* 用於下一題按鈕的背景，代表綠色 */
+      color: white;   /* 用於選項按鈕和下一題按鈕的文字，代表白色文字 */
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    #next:hover {
+      background: #1e7e34;  /* 用於下一題按鈕的懸停狀態，代表更深的綠色 */
+    }
+    #more-info {
+  
+        font-size: 0.8em; /* 縮小字體 */
+  
+        color: #0056b3;
+        margin-top: 10px; /* 增加與其他元素的間距 */
+}
+
+    /* 新增樣式 */
+    .correct {
+      color: #1f07f7;  /* 代表答對文字為藍色 */
+      font-weight: bold;
+    }
+    .incorrect {
+      color: #c0392b;  /* 代表答錯文字為紅色 */
+      font-weight: bold;
+    }
+
+    /* 媒體查詢：適應不同螢幕大小 */
+    @media (max-width: 600px) {
+      #question {
+        font-size: 1.2em;
+      }
+      .option {
+        font-size: 0.9em;
+      }
+      #result-text {
+        font-size: 1.2em;
+      }
+      #next {
+        font-size: 0.9em;
+      }
+    }
+    @media (max-width: 400px) {
+      #question {
+        font-size: 1em;
+      }
+      .option {
+        font-size: 0.8em;
+      }
+      #result-text {
+        font-size: 1em;
+      }
+      #next {
+        font-size: 0.8em;
+      }
+    }
+  </style>
+</head>
+<body id="background">
+  <div id="game-container">
+    <div id="question"></div>
+    <div id="options"></div>
+  </div>
+
+  <div id="result-container">
+    <div id="result-text"></div>
+    <div id="correct-answer"></div>
+    <div id="book-title1">新書推薦：</div>
+    <div id="book-title2">一天一則，發現366個自然和科學有趣知識</div>
+    <a id="book-link" href="https://www.morningstar.com.tw/bookinfo.aspx?bookno=0165044" target="_blank">
+      <img id="book-cover" alt="書籍封面">
+    </a>
+    <div id="more-info">點擊書籍，了解更多</div>
+    <button id="next">下一題</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "我們吃到肚子裡的東西，大概多久之後會變成糞便？",
+        options: ["1.  6~12小時", "2. 24~48小時", "3. 48~60小時"],
+        answer: 1, 
+        explanation: "吃的東西經過腸胃的同時，營養吸收後再成為糞便從肛門排出，此過程大概要花24~48小時",
+        background: "background1.jpg",
+        bookCover: "book1.jpg"
+      },
+      {
+        question: "人類的身高會長到幾歲為止？",
+        options: ["1.  9~10歲", "2. 15~18歲", "3. 25~28歲"],
+        answer: 1, 
+        explanation: "人類過了10歲後開始大量製造男性賀爾蒙或女性荷爾蒙，身體會產生變化並持續成長",
+        background: "background1.jpg",
+        bookCover: "book1.jpg"
+      },
+      {
+        question: "彩虹的顏色總共分成幾個顏色呢？",
+        options: ["1. 紅、黃、綠三色", "2. 七色", "3. 數也數不清的許多顏色"],
+        answer: 2,
+        explanation: "彩虹的顏色大多是數成七種，但顏色跟顏色之間並沒有邊界，可以分成很多很多顏色",
+        background: "background1.jpg",
+        bookCover: "book1.jpg"
+      },
+      {
+        question: "腳底的足弓有什麼樣的用處呢？",
+        options: ["1. 走路的時候可以緩和衝擊", "2. 避免腳底沾到垃圾", "3.防止來自地面的病原體"],
+        answer: 0,
+        explanation: "足弓可以支撐身體。在走路的時候緩和衝擊的功用。且是在走路時形成的，因此小嬰兒還沒有",
+        background: "background1.jpg",
+        bookCover: "book1.jpg"
+      },
+      {
+        question: "狗為什麼會在各種地方尿尿？",
+        options: ["1. 要讓別的狗知道自己的地盤", "2. 因為沒有固定的廁所", "3. 為了能在迷路的時候順利回家"],
+        answer: 0,
+        explanation: "公狗會抬起單腳尿尿。牠們會在許多地方撒上自己的氣味，讓其他狗知道",
+        background: "background1.jpg",
+        bookCover: "book1.jpg"
+      },
+    ];
+
+    let remainingQuestions = [...questions];
+    const gameContainer = document.getElementById("game-container");
+    const resultContainer = document.getElementById("result-container");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const resultText = document.getElementById("result-text");
+    const correctAnswer = document.getElementById("correct-answer");
+    const bookCover = document.getElementById("book-cover");
+    const nextButton = document.getElementById("next");
+    const background = document.getElementById("background");
+
+   function loadRandomQuestion() {
+  if (remainingQuestions.length === 0) {
+    questionElement.innerHTML = 
+       "每天一則小知識，帶孩子感受自然科學的無窮魅力，培養好奇心與求知慾，<br>" + 
+       "《一天一則，發現366個自然和科學有趣知識》<br>" + 
+        "將成為您的知識探索旅程最佳夥伴！<br><br>" + 
+      
+       "<a href='https://reurl.cc/36ypvO' target='_blank' style='color: #1f07f7; text-decoration: none; font-size: 1em; display: inline-flex; align-items: center;'>蝦皮 點此購買 " +
+  
+       "<img src='images/shopee-logo.jpg' alt='蝦皮標誌' style='width: 50px; height: 50px; margin-left: 5px;'></a>";
+    questionElement.style.fontSize = "1em"; // 調整字體大小
+    questionElement.style.color = " black";     // 可選：調整字體顏色
+    optionsElement.innerHTML = "";
+
+    // 動態插入書籍封面和連結
+    const bookContainer = document.createElement("div");
+    bookContainer.style.textAlign = "center";
+    bookContainer.style.marginTop = "20px";
+
+    const bookLink = document.createElement("a");
+    bookLink.href = "https://www.morningstar.com.tw/bookinfo.aspx?bookno=0165044";
+    bookLink.target = "_blank";
+
+    const bookCover = document.createElement("img");
+    bookCover.src = "book1.jpg";
+   
+    bookCover.style.maxWidth = "100%";
+    bookCover.style.height = "auto";
+    bookCover.style.marginBottom = "20px";
+
+    bookLink.appendChild(bookCover);
+    bookContainer.appendChild(bookLink);
+
+   
+    // 將書籍內容插入 optionsElement
+    optionsElement.appendChild(bookContainer);
+
+    return;
+   }
+      const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+      const q = remainingQuestions.splice(randomIndex, 1)[0];
+
+      questionElement.textContent = q.question;
+      optionsElement.innerHTML = "";
+      background.style.backgroundImage = `url(${q.background})`;
+
+      q.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.className = "option";
+        button.onclick = () => checkAnswer(index, q);
+        optionsElement.appendChild(button);
+      });
+    }
+
+    function checkAnswer(selected, q) {
+      const isCorrect = selected === q.answer;
+
+      // 動態套用樣式
+      resultText.className = isCorrect ? "correct" : "incorrect";
+      resultText.textContent = isCorrect ? "答對了！" : "答錯了！";
+
+      correctAnswer.innerHTML = 
+        `<span style="color: brown;">正確答案：${q.options[q.answer]}。</span><br>` + 
+        `${q.explanation}`;
+      bookCover.src = q.bookCover;
+
+      gameContainer.classList.remove("active");
+      resultContainer.classList.add("active");
+    }
+
+    nextButton.onclick = () => {
+      loadRandomQuestion();
+      gameContainer.classList.add("active");
+      resultContainer.classList.remove("active");
+    };
+
+    loadRandomQuestion();
+    gameContainer.classList.add("active");
+  </script>
+</body>
+</html>
